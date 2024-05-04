@@ -8,6 +8,51 @@
         "id": "EDAStack",
         "path": "EDAStack",
         "children": {
+          "FileTable": {
+            "id": "FileTable",
+            "path": "EDAStack/FileTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EDAStack/FileTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "FileName",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "FileName",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "tableName": "FileTable"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "version": "2.88.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "EDAStack/FileTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.88.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "2.88.0"
+            }
+          },
           "images": {
             "id": "images",
             "path": "EDAStack/images",
@@ -705,6 +750,34 @@
                                       ]
                                     }
                                   ]
+                                },
+                                {
+                                  "Action": [
+                                    "dynamodb:BatchGetItem",
+                                    "dynamodb:BatchWriteItem",
+                                    "dynamodb:ConditionCheckItem",
+                                    "dynamodb:DeleteItem",
+                                    "dynamodb:DescribeTable",
+                                    "dynamodb:GetItem",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:PutItem",
+                                    "dynamodb:Query",
+                                    "dynamodb:Scan",
+                                    "dynamodb:UpdateItem"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "FileTableE63FDBC8",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Ref": "AWS::NoValue"
+                                    }
+                                  ]
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -770,10 +843,16 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                       },
-                      "s3Key": "31926c0825e00cfa60478cf51f96c54d444fde01e255a94193184d14c341f360.zip"
+                      "s3Key": "2dff5604f14a4b9e7daf40681b14d1ebca6096b55832e05e6e4208bde87b9f01.zip"
                     },
                     "environment": {
                       "variables": {
+                        "REGION": {
+                          "Ref": "AWS::Region"
+                        },
+                        "TABLE_NAME": {
+                          "Ref": "FileTableE63FDBC8"
+                        },
                         "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
                       }
                     },
@@ -1244,6 +1323,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
                       "aws:cdk:cloudformation:props": {
+                        "batchSize": 5,
                         "eventSourceArn": {
                           "Fn::GetAtt": [
                             "rejectedmailerqueue558CD492",
@@ -1253,10 +1333,7 @@
                         "functionName": {
                           "Ref": "rejectionmailerfunction5F638EB4"
                         },
-                        "maximumBatchingWindowInSeconds": 5,
-                        "scalingConfig": {
-                          "maximumConcurrency": 2
-                        }
+                        "maximumBatchingWindowInSeconds": 10
                       }
                     },
                     "constructInfo": {

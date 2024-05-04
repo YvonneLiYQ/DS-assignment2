@@ -1,5 +1,29 @@
 {
  "Resources": {
+  "FileTableE63FDBC8": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "FileName",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "FileName",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "FileTable"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/FileTable/Resource"
+   }
+  },
   "images9BF4DCD5": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -543,6 +567,34 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FileTableE63FDBC8",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -565,10 +617,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "31926c0825e00cfa60478cf51f96c54d444fde01e255a94193184d14c341f360.zip"
+     "S3Key": "2dff5604f14a4b9e7daf40681b14d1ebca6096b55832e05e6e4208bde87b9f01.zip"
     },
     "Environment": {
      "Variables": {
+      "REGION": {
+       "Ref": "AWS::Region"
+      },
+      "TABLE_NAME": {
+       "Ref": "FileTableE63FDBC8"
+      },
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
@@ -589,7 +647,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "EDAStack/ProcessImageFn/Resource",
-    "aws:asset:path": "asset.31926c0825e00cfa60478cf51f96c54d444fde01e255a94193184d14c341f360",
+    "aws:asset:path": "asset.2dff5604f14a4b9e7daf40681b14d1ebca6096b55832e05e6e4208bde87b9f01",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -863,6 +921,7 @@
   "rejectionmailerfunctionSqsEventSourceEDAStackrejectedmailerqueue0605864147E4D7A2": {
    "Type": "AWS::Lambda::EventSourceMapping",
    "Properties": {
+    "BatchSize": 5,
     "EventSourceArn": {
      "Fn::GetAtt": [
       "rejectedmailerqueue558CD492",
@@ -872,10 +931,7 @@
     "FunctionName": {
      "Ref": "rejectionmailerfunction5F638EB4"
     },
-    "MaximumBatchingWindowInSeconds": 5,
-    "ScalingConfig": {
-     "MaximumConcurrency": 2
-    }
+    "MaximumBatchingWindowInSeconds": 10
    },
    "Metadata": {
     "aws:cdk:path": "EDAStack/rejection-mailer-function/SqsEventSource:EDAStackrejectedmailerqueue06058641/Resource"
@@ -967,7 +1023,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2VPS2+DMAz+Lb2nXtdqUq8rWm/bOtgdheBW4ZEwnFBNUf77lICAahd/j9ifnT0cj7Db8DttRVlvG1mAywwXNeN3yh0dwJ2sqNGw5KomNsJFN1L8LvakR3HihJ7RD4H7smgxtI0k1mV2JT0jReAyW5DoZWekVqHjQX/rTorgjiTWJWwlPWt4W5Q8V7rEiuAjwtkqEXMkb8GluomHRVxS5msOOSdCQ/AaYAoEl1zVnPM2oDKZtr3Ad951Ut1Cwn/Xe5ZYMrpNkaIf98784enS60GW2LO4NjP8FmLXg5/WdNZ4Fv4GFT0N+2d4gd2mIim3vVVGtgjpiH8MGzAC4QEAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WPzW7DIBCEnyV3vE0TVcq1sZpb29TO3VoDifAPuF5wFCHevTK24lRVLzs7A/uxbGC3g/UKr5RwUSeNKsHnFnnN8EqFFzeNrREl+BOWjWTpWccmMNqC3zteSzuGczfJ0TSK35Z49pPZI43T3wT+y0kXkVMT6zL7YAMjTeBzVxLvVWeV0eONX/5kOsXjfrGJdYE92MAabEuBhTZCVgQfUQ5O88hR2ILPzPTXqAvlvs22QCJpCV5HmYHg07O+c94GqW1uXM/lO3ad0peR8DcNgWWSYsJSR9a0iz3rf46OvRmUkD2L7+cWLzP/09nO2cDGv0FFT8PmGV5gvapIqaR32qpWQjbpD/SZUwz7AQAA"
    },
    "Metadata": {
     "aws:cdk:path": "EDAStack/CDKMetadata/Default"

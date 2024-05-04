@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/1cc0f0c440736c65905cc2f08a7268ae2f146457420fffc9043c2587f2304026.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/19e0345540f48d9c5d2f23849e3133e53cd7c08e5e2dde35bfff0a2a9a2408c1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +33,20 @@
         "EDAStack.assets"
       ],
       "metadata": {
+        "/EDAStack/FileTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "FileTableE63FDBC8"
+            }
+          }
+        ],
+        "/EDAStack/FileTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileTableE63FDBC8"
+          }
+        ],
         "/EDAStack/images/Resource": [
           {
             "type": "aws:cdk:logicalId",
