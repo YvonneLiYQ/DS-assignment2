@@ -192,10 +192,89 @@
     "aws:asset:property": "Code"
    }
   },
-  "imgcreatedqueueB98FF37D": {
+  "rejectedmailerqueue558CD492": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
     "ReceiveMessageWaitTimeSeconds": 10
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/rejected-mailer-queue/Resource"
+   }
+  },
+  "rejectedmailerqueuePolicy7C07F291": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Ref": "NewImageTopic7927ABDB"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "rejectedmailerqueue558CD492",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "rejectedmailerqueue558CD492"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/rejected-mailer-queue/Policy/Resource"
+   }
+  },
+  "rejectedmailerqueueEDAStackNewImageTopicD12C2BE836A24524": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "rejectedmailerqueue558CD492",
+      "Arn"
+     ]
+    },
+    "Protocol": "sqs",
+    "TopicArn": {
+     "Ref": "NewImageTopic7927ABDB"
+    }
+   },
+   "DependsOn": [
+    "rejectedmailerqueuePolicy7C07F291"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/rejected-mailer-queue/EDAStackNewImageTopicD12C2BE8/Resource"
+   }
+  },
+  "imgcreatedqueueB98FF37D": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "ReceiveMessageWaitTimeSeconds": 10,
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "rejectedmailerqueue558CD492",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 1
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -486,7 +565,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "99254db85ea4d484896f12273e58aabf84d840fd8c563bc66fe345e551a2373a.zip"
+     "S3Key": "31926c0825e00cfa60478cf51f96c54d444fde01e255a94193184d14c341f360.zip"
     },
     "Environment": {
      "Variables": {
@@ -510,7 +589,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "EDAStack/ProcessImageFn/Resource",
-    "aws:asset:path": "/Users/liyangqing/development/Codes/C/Distribute/ds-eda-lab",
+    "aws:asset:path": "asset.31926c0825e00cfa60478cf51f96c54d444fde01e255a94193184d14c341f360",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -619,7 +698,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "45127eb3580691ea19ebcf170a71d1712ec74ea7ad44ed0c1d6a612432a951be.zip"
+     "S3Key": "eed6693e7f016f0c88eabbda5aa98938d8b7d80ceb502369464f90f6ffcd5d23.zip"
     },
     "Environment": {
      "Variables": {
@@ -643,7 +722,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "EDAStack/mailer-function/Resource",
-    "aws:asset:path": "/Users/liyangqing/development/Codes/C/Distribute/ds-eda-lab",
+    "aws:asset:path": "asset.eed6693e7f016f0c88eabbda5aa98938d8b7d80ceb502369464f90f6ffcd5d23",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -665,6 +744,141 @@
    },
    "Metadata": {
     "aws:cdk:path": "EDAStack/mailer-function/SqsEventSource:EDAStackmailerqueue91FA78B3/Resource"
+   }
+  },
+  "rejectionmailerfunctionServiceRole4D0F00FA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/rejection-mailer-function/ServiceRole/Resource"
+   }
+  },
+  "rejectionmailerfunctionServiceRoleDefaultPolicy0E6935D1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "rejectedmailerqueue558CD492",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ses:SendEmail",
+        "ses:SendRawEmail",
+        "ses:SendTemplatedEmail"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "rejectionmailerfunctionServiceRoleDefaultPolicy0E6935D1",
+    "Roles": [
+     {
+      "Ref": "rejectionmailerfunctionServiceRole4D0F00FA"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/rejection-mailer-function/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "rejectionmailerfunction5F638EB4": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
+     },
+     "S3Key": "45af745e808deb1317867bb722bd3fb5e1394a08ef0f2bad15cdb11e7d5b13b7.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "index.handler",
+    "MemorySize": 1024,
+    "Role": {
+     "Fn::GetAtt": [
+      "rejectionmailerfunctionServiceRole4D0F00FA",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs16.x",
+    "Timeout": 3
+   },
+   "DependsOn": [
+    "rejectionmailerfunctionServiceRoleDefaultPolicy0E6935D1",
+    "rejectionmailerfunctionServiceRole4D0F00FA"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/rejection-mailer-function/Resource",
+    "aws:asset:path": "asset.45af745e808deb1317867bb722bd3fb5e1394a08ef0f2bad15cdb11e7d5b13b7",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "rejectionmailerfunctionSqsEventSourceEDAStackrejectedmailerqueue0605864147E4D7A2": {
+   "Type": "AWS::Lambda::EventSourceMapping",
+   "Properties": {
+    "EventSourceArn": {
+     "Fn::GetAtt": [
+      "rejectedmailerqueue558CD492",
+      "Arn"
+     ]
+    },
+    "FunctionName": {
+     "Ref": "rejectionmailerfunction5F638EB4"
+    },
+    "MaximumBatchingWindowInSeconds": 5,
+    "ScalingConfig": {
+     "MaximumConcurrency": 2
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/rejection-mailer-function/SqsEventSource:EDAStackrejectedmailerqueue06058641/Resource"
    }
   },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {

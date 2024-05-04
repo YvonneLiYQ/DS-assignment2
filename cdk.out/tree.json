@@ -176,6 +176,116 @@
               "version": "2.88.0"
             }
           },
+          "rejected-mailer-queue": {
+            "id": "rejected-mailer-queue",
+            "path": "EDAStack/rejected-mailer-queue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EDAStack/rejected-mailer-queue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {
+                    "receiveMessageWaitTimeSeconds": 10
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "2.88.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "EDAStack/rejected-mailer-queue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EDAStack/rejected-mailer-queue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Ref": "NewImageTopic7927ABDB"
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sns.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "rejectedmailerqueue558CD492",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "rejectedmailerqueue558CD492"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
+                      "version": "2.88.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                  "version": "2.88.0"
+                }
+              },
+              "EDAStackNewImageTopicD12C2BE8": {
+                "id": "EDAStackNewImageTopicD12C2BE8",
+                "path": "EDAStack/rejected-mailer-queue/EDAStackNewImageTopicD12C2BE8",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EDAStack/rejected-mailer-queue/EDAStackNewImageTopicD12C2BE8/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "endpoint": {
+                          "Fn::GetAtt": [
+                            "rejectedmailerqueue558CD492",
+                            "Arn"
+                          ]
+                        },
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Ref": "NewImageTopic7927ABDB"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
+                      "version": "2.88.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                  "version": "2.88.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "2.88.0"
+            }
+          },
           "img-created-queue": {
             "id": "img-created-queue",
             "path": "EDAStack/img-created-queue",
@@ -186,7 +296,16 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                   "aws:cdk:cloudformation:props": {
-                    "receiveMessageWaitTimeSeconds": 10
+                    "receiveMessageWaitTimeSeconds": 10,
+                    "redrivePolicy": {
+                      "deadLetterTargetArn": {
+                        "Fn::GetAtt": [
+                          "rejectedmailerqueue558CD492",
+                          "Arn"
+                        ]
+                      },
+                      "maxReceiveCount": 1
+                    }
                   }
                 },
                 "constructInfo": {
@@ -651,7 +770,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                       },
-                      "s3Key": "99254db85ea4d484896f12273e58aabf84d840fd8c563bc66fe345e551a2373a.zip"
+                      "s3Key": "31926c0825e00cfa60478cf51f96c54d444fde01e255a94193184d14c341f360.zip"
                     },
                     "environment": {
                       "variables": {
@@ -871,7 +990,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                       },
-                      "s3Key": "45127eb3580691ea19ebcf170a71d1712ec74ea7ad44ed0c1d6a612432a951be.zip"
+                      "s3Key": "eed6693e7f016f0c88eabbda5aa98938d8b7d80ceb502369464f90f6ffcd5d23.zip"
                     },
                     "environment": {
                       "variables": {
@@ -916,6 +1035,228 @@
                           "Ref": "mailerfunction0BFEF8E7"
                         },
                         "maximumBatchingWindowInSeconds": 10
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnEventSourceMapping",
+                      "version": "2.88.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.EventSourceMapping",
+                  "version": "2.88.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
+              "version": "2.88.0"
+            }
+          },
+          "rejection-mailer-function": {
+            "id": "rejection-mailer-function",
+            "path": "EDAStack/rejection-mailer-function",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "EDAStack/rejection-mailer-function/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "EDAStack/rejection-mailer-function/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.88.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EDAStack/rejection-mailer-function/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.88.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "EDAStack/rejection-mailer-function/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "EDAStack/rejection-mailer-function/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "sqs:ChangeMessageVisibility",
+                                    "sqs:DeleteMessage",
+                                    "sqs:GetQueueAttributes",
+                                    "sqs:GetQueueUrl",
+                                    "sqs:ReceiveMessage"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "rejectedmailerqueue558CD492",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "ses:SendEmail",
+                                    "ses:SendRawEmail",
+                                    "ses:SendTemplatedEmail"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "rejectionmailerfunctionServiceRoleDefaultPolicy0E6935D1",
+                            "roles": [
+                              {
+                                "Ref": "rejectionmailerfunctionServiceRole4D0F00FA"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.88.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.88.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.88.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "EDAStack/rejection-mailer-function/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "EDAStack/rejection-mailer-function/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.88.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "EDAStack/rejection-mailer-function/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.88.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.88.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EDAStack/rejection-mailer-function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
+                      },
+                      "s3Key": "45af745e808deb1317867bb722bd3fb5e1394a08ef0f2bad15cdb11e7d5b13b7.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                      }
+                    },
+                    "handler": "index.handler",
+                    "memorySize": 1024,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "rejectionmailerfunctionServiceRole4D0F00FA",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs16.x",
+                    "timeout": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.88.0"
+                }
+              },
+              "SqsEventSource:EDAStackrejectedmailerqueue06058641": {
+                "id": "SqsEventSource:EDAStackrejectedmailerqueue06058641",
+                "path": "EDAStack/rejection-mailer-function/SqsEventSource:EDAStackrejectedmailerqueue06058641",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EDAStack/rejection-mailer-function/SqsEventSource:EDAStackrejectedmailerqueue06058641/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "eventSourceArn": {
+                          "Fn::GetAtt": [
+                            "rejectedmailerqueue558CD492",
+                            "Arn"
+                          ]
+                        },
+                        "functionName": {
+                          "Ref": "rejectionmailerfunction5F638EB4"
+                        },
+                        "maximumBatchingWindowInSeconds": 5,
+                        "scalingConfig": {
+                          "maximumConcurrency": 2
+                        }
                       }
                     },
                     "constructInfo": {

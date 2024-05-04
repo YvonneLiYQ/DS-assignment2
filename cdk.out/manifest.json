@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/6496436c90c835dfe123ac14727c3b9ffdb9be9ef86616aa877c1391d3ad36b5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/1cc0f0c440736c65905cc2f08a7268ae2f146457420fffc9043c2587f2304026.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -67,6 +67,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/EDAStack/rejected-mailer-queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "rejectedmailerqueue558CD492"
+          }
+        ],
+        "/EDAStack/rejected-mailer-queue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "rejectedmailerqueuePolicy7C07F291"
+          }
+        ],
+        "/EDAStack/rejected-mailer-queue/EDAStackNewImageTopicD12C2BE8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "rejectedmailerqueueEDAStackNewImageTopicD12C2BE836A24524"
           }
         ],
         "/EDAStack/img-created-queue/Resource": [
@@ -163,6 +181,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "mailerfunctionSqsEventSourceEDAStackmailerqueue91FA78B34B0788D0"
+          }
+        ],
+        "/EDAStack/rejection-mailer-function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "rejectionmailerfunctionServiceRole4D0F00FA"
+          }
+        ],
+        "/EDAStack/rejection-mailer-function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "rejectionmailerfunctionServiceRoleDefaultPolicy0E6935D1"
+          }
+        ],
+        "/EDAStack/rejection-mailer-function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "rejectionmailerfunction5F638EB4"
+          }
+        ],
+        "/EDAStack/rejection-mailer-function/SqsEventSource:EDAStackrejectedmailerqueue06058641/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "rejectionmailerfunctionSqsEventSourceEDAStackrejectedmailerqueue0605864147E4D7A2"
           }
         ],
         "/EDAStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
