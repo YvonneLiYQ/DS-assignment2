@@ -1,5 +1,5 @@
 /* eslint-disable import/extensions, import/no-absolute-path */
-import { SQSHandler } from "aws-lambda";
+import { SQSHandler, Context,SQSEvent } from "aws-lambda";
 import {
   GetObjectCommand,
   PutObjectCommandInput,
@@ -7,10 +7,11 @@ import {
   S3Client,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
+import * as path from "path";
 
 const s3 = new S3Client();
 
-export const handler: SQSHandler = async (event) => {
+export const handler: SQSHandler = async (event: SQSEvent, context: Context) => {
   console.log("Event ", JSON.stringify(event));
   for (const record of event.Records) {
     const recordBody = JSON.parse(record.body);  // Parse SQS message
@@ -30,6 +31,13 @@ export const handler: SQSHandler = async (event) => {
             Bucket: srcBucket,
             Key: srcKey,
           };
+
+          //check if jpg and png 
+          const extension = path.extname(srcKey);
+                    if (extension !== '.jpeg' && extension !== '.png') {
+                        throw new Error(`Invalid file type: ${extension}`);
+                    }
+                    
           origimage = await s3.send(new GetObjectCommand(params));
           // Process the image ......
         } catch (error) {
