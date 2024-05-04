@@ -32,12 +32,12 @@ export const handler: SQSHandler = async (event: SQSEvent, context: Context) => 
             Key: srcKey,
           };
 
-          //check if jpg and png 
+          //check if jpeg and png 
           const extension = path.extname(srcKey);
                     if (extension !== '.jpeg' && extension !== '.png') {
                         throw new Error(`Invalid file type: ${extension}`);
                     }
-                    
+
           origimage = await s3.send(new GetObjectCommand(params));
           // Process the image ......
         } catch (error) {
