@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/020708f010a6ab1f767afd89c1610f019765031d69392cbe017aff84a851e76f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/51b55f3e97e97ce556d754b25413ca1229ed1f721f7f7b0e723ede3b40e3a972.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -89,18 +89,6 @@
             "data": "rejectedmailerqueue558CD492"
           }
         ],
-        "/EDAStack/rejected-mailer-queue/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "rejectedmailerqueuePolicy7C07F291"
-          }
-        ],
-        "/EDAStack/rejected-mailer-queue/EDAStackNewImageTopicD12C2BE8/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "rejectedmailerqueueEDAStackNewImageTopicD12C2BE836A24524"
-          }
-        ],
         "/EDAStack/img-created-queue/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -113,52 +101,22 @@
             "data": "imgcreatedqueuePolicyE807AE11"
           }
         ],
-        "/EDAStack/img-created-queue/EDAStackNewImageTopicD12C2BE8/Resource": [
+        "/EDAStack/img-created-queue/EDAStackTotalImageTopicC56F5992/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "imgcreatedqueueEDAStackNewImageTopicD12C2BE856F43343"
+            "data": "imgcreatedqueueEDAStackTotalImageTopicC56F5992D768F3A8"
           }
         ],
-        "/EDAStack/NewImageTopic/Resource": [
+        "/EDAStack/TotalImageTopic/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NewImageTopic7927ABDB"
+            "data": "TotalImageTopicF9AE9822"
           }
         ],
-        "/EDAStack/NewImageTopic/Policy/Resource": [
+        "/EDAStack/TotalImageTopic/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NewImageTopicPolicy710AE2A8"
-          }
-        ],
-        "/EDAStack/ModifiedImageTopic/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ModifiedImageTopicC6478B85"
-          }
-        ],
-        "/EDAStack/ModifiedImageTopic/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ModifiedImageTopicPolicy1C856FA1"
-          }
-        ],
-        "/EDAStack/mailer-queue/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mailerqueueC56E331C"
-          }
-        ],
-        "/EDAStack/mailer-queue/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mailerqueuePolicyD1A1678C"
-          }
-        ],
-        "/EDAStack/mailer-queue/EDAStackNewImageTopicD12C2BE8/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mailerqueueEDAStackNewImageTopicD12C2BE84E1E546B"
+            "data": "TotalImageTopicPolicy27B068A8"
           }
         ],
         "/EDAStack/ProcessImageFn/ServiceRole/Resource": [
@@ -203,10 +161,16 @@
             "data": "mailerfunction0BFEF8E7"
           }
         ],
-        "/EDAStack/mailer-function/SqsEventSource:EDAStackmailerqueue91FA78B3/Resource": [
+        "/EDAStack/mailer-function/AllowInvoke:EDAStackTotalImageTopicC56F5992": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mailerfunctionSqsEventSourceEDAStackmailerqueue91FA78B34B0788D0"
+            "data": "mailerfunctionAllowInvokeEDAStackTotalImageTopicC56F5992ECCBED93"
+          }
+        ],
+        "/EDAStack/mailer-function/TotalImageTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mailerfunctionTotalImageTopicBD51A04C"
           }
         ],
         "/EDAStack/rejection-mailer-function/ServiceRole/Resource": [
@@ -251,16 +215,40 @@
             "data": "deleteimagefunction87752EA4"
           }
         ],
-        "/EDAStack/delete-image-function/AllowInvoke:EDAStackModifiedImageTopicEABCADEB": [
+        "/EDAStack/delete-image-function/AllowInvoke:EDAStackTotalImageTopicC56F5992": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "deleteimagefunctionAllowInvokeEDAStackModifiedImageTopicEABCADEB911BAA30"
+            "data": "deleteimagefunctionAllowInvokeEDAStackTotalImageTopicC56F5992B9393335"
           }
         ],
-        "/EDAStack/delete-image-function/ModifiedImageTopic/Resource": [
+        "/EDAStack/delete-image-function/TotalImageTopic/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "deleteimagefunctionModifiedImageTopicC227A36F"
+            "data": "deleteimagefunctionTotalImageTopic2BE3B2EA"
+          }
+        ],
+        "/EDAStack/delete-mailer-function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deletemailerfunctionServiceRoleCE691928"
+          }
+        ],
+        "/EDAStack/delete-mailer-function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deletemailerfunctionServiceRoleDefaultPolicyA62A13BD"
+          }
+        ],
+        "/EDAStack/delete-mailer-function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deletemailerfunction4A46A71C"
+          }
+        ],
+        "/EDAStack/delete-mailer-function/DynamoDBEventSource:EDAStackFileTable32EC2CCC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deletemailerfunctionDynamoDBEventSourceEDAStackFileTable32EC2CCCB794C2E2"
           }
         ],
         "/EDAStack/update-image-function/ServiceRole/Resource": [
@@ -281,16 +269,16 @@
             "data": "updateimagefunction6E8C4698"
           }
         ],
-        "/EDAStack/update-image-function/AllowInvoke:EDAStackModifiedImageTopicEABCADEB": [
+        "/EDAStack/update-image-function/AllowInvoke:EDAStackTotalImageTopicC56F5992": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "updateimagefunctionAllowInvokeEDAStackModifiedImageTopicEABCADEB3E6908A7"
+            "data": "updateimagefunctionAllowInvokeEDAStackTotalImageTopicC56F5992276C1CD4"
           }
         ],
-        "/EDAStack/update-image-function/ModifiedImageTopic/Resource": [
+        "/EDAStack/update-image-function/TotalImageTopic/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "updateimagefunctionModifiedImageTopicD27FA603"
+            "data": "updateimagefunctionTotalImageTopic576130F0"
           }
         ],
         "/EDAStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [

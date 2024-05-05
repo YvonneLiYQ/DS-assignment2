@@ -31,6 +31,9 @@
                         "keyType": "HASH"
                       }
                     ],
+                    "streamSpecification": {
+                      "streamViewType": "OLD_IMAGE"
+                    },
                     "tableName": "FileTable"
                   }
                 },
@@ -238,92 +241,6 @@
                   "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
                   "version": "2.88.0"
                 }
-              },
-              "Policy": {
-                "id": "Policy",
-                "path": "EDAStack/rejected-mailer-queue/Policy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "EDAStack/rejected-mailer-queue/Policy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sqs:SendMessage",
-                              "Condition": {
-                                "ArnEquals": {
-                                  "aws:SourceArn": {
-                                    "Ref": "NewImageTopic7927ABDB"
-                                  }
-                                }
-                              },
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "sns.amazonaws.com"
-                              },
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "rejectedmailerqueue558CD492",
-                                  "Arn"
-                                ]
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "queues": [
-                          {
-                            "Ref": "rejectedmailerqueue558CD492"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
-                      "version": "2.88.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
-                  "version": "2.88.0"
-                }
-              },
-              "EDAStackNewImageTopicD12C2BE8": {
-                "id": "EDAStackNewImageTopicD12C2BE8",
-                "path": "EDAStack/rejected-mailer-queue/EDAStackNewImageTopicD12C2BE8",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "EDAStack/rejected-mailer-queue/EDAStackNewImageTopicD12C2BE8/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
-                      "aws:cdk:cloudformation:props": {
-                        "endpoint": {
-                          "Fn::GetAtt": [
-                            "rejectedmailerqueue558CD492",
-                            "Arn"
-                          ]
-                        },
-                        "protocol": "sqs",
-                        "topicArn": {
-                          "Ref": "NewImageTopic7927ABDB"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
-                      "version": "2.88.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sns.Subscription",
-                  "version": "2.88.0"
-                }
               }
             },
             "constructInfo": {
@@ -375,7 +292,7 @@
                               "Condition": {
                                 "ArnEquals": {
                                   "aws:SourceArn": {
-                                    "Ref": "NewImageTopic7927ABDB"
+                                    "Ref": "TotalImageTopicF9AE9822"
                                   }
                                 }
                               },
@@ -411,13 +328,13 @@
                   "version": "2.88.0"
                 }
               },
-              "EDAStackNewImageTopicD12C2BE8": {
-                "id": "EDAStackNewImageTopicD12C2BE8",
-                "path": "EDAStack/img-created-queue/EDAStackNewImageTopicD12C2BE8",
+              "EDAStackTotalImageTopicC56F5992": {
+                "id": "EDAStackTotalImageTopicC56F5992",
+                "path": "EDAStack/img-created-queue/EDAStackTotalImageTopicC56F5992",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "EDAStack/img-created-queue/EDAStackNewImageTopicD12C2BE8/Resource",
+                    "path": "EDAStack/img-created-queue/EDAStackTotalImageTopicC56F5992/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {
@@ -427,275 +344,19 @@
                             "Arn"
                           ]
                         },
-                        "protocol": "sqs",
-                        "topicArn": {
-                          "Ref": "NewImageTopic7927ABDB"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
-                      "version": "2.88.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sns.Subscription",
-                  "version": "2.88.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sqs.Queue",
-              "version": "2.88.0"
-            }
-          },
-          "NewImageTopic": {
-            "id": "NewImageTopic",
-            "path": "EDAStack/NewImageTopic",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "EDAStack/NewImageTopic/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
-                  "aws:cdk:cloudformation:props": {
-                    "displayName": "New Image topic"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
-                  "version": "2.88.0"
-                }
-              },
-              "Policy": {
-                "id": "Policy",
-                "path": "EDAStack/NewImageTopic/Policy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "EDAStack/NewImageTopic/Policy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sns:Publish",
-                              "Condition": {
-                                "ArnLike": {
-                                  "aws:SourceArn": {
-                                    "Fn::GetAtt": [
-                                      "images9BF4DCD5",
-                                      "Arn"
-                                    ]
-                                  }
-                                }
-                              },
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "s3.amazonaws.com"
-                              },
-                              "Resource": {
-                                "Ref": "NewImageTopic7927ABDB"
-                              },
-                              "Sid": "0"
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "topics": [
-                          {
-                            "Ref": "NewImageTopic7927ABDB"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_sns.CfnTopicPolicy",
-                      "version": "2.88.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sns.TopicPolicy",
-                  "version": "2.88.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sns.Topic",
-              "version": "2.88.0"
-            }
-          },
-          "ModifiedImageTopic": {
-            "id": "ModifiedImageTopic",
-            "path": "EDAStack/ModifiedImageTopic",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "EDAStack/ModifiedImageTopic/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
-                  "aws:cdk:cloudformation:props": {
-                    "displayName": "Modified Image topic"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
-                  "version": "2.88.0"
-                }
-              },
-              "Policy": {
-                "id": "Policy",
-                "path": "EDAStack/ModifiedImageTopic/Policy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "EDAStack/ModifiedImageTopic/Policy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sns:Publish",
-                              "Condition": {
-                                "ArnLike": {
-                                  "aws:SourceArn": {
-                                    "Fn::GetAtt": [
-                                      "images9BF4DCD5",
-                                      "Arn"
-                                    ]
-                                  }
-                                }
-                              },
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "s3.amazonaws.com"
-                              },
-                              "Resource": {
-                                "Ref": "ModifiedImageTopicC6478B85"
-                              },
-                              "Sid": "0"
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "topics": [
-                          {
-                            "Ref": "ModifiedImageTopicC6478B85"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_sns.CfnTopicPolicy",
-                      "version": "2.88.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sns.TopicPolicy",
-                  "version": "2.88.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sns.Topic",
-              "version": "2.88.0"
-            }
-          },
-          "mailer-queue": {
-            "id": "mailer-queue",
-            "path": "EDAStack/mailer-queue",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "EDAStack/mailer-queue/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
-                  "aws:cdk:cloudformation:props": {
-                    "receiveMessageWaitTimeSeconds": 10
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
-                  "version": "2.88.0"
-                }
-              },
-              "Policy": {
-                "id": "Policy",
-                "path": "EDAStack/mailer-queue/Policy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "EDAStack/mailer-queue/Policy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sqs:SendMessage",
-                              "Condition": {
-                                "ArnEquals": {
-                                  "aws:SourceArn": {
-                                    "Ref": "NewImageTopic7927ABDB"
-                                  }
-                                }
-                              },
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "sns.amazonaws.com"
-                              },
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "mailerqueueC56E331C",
-                                  "Arn"
-                                ]
+                        "filterPolicy": {
+                          "Records": {
+                            "eventName": [
+                              {
+                                "prefix": "ObjectCreated:Put"
                               }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "queues": [
-                          {
-                            "Ref": "mailerqueueC56E331C"
+                            ]
                           }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
-                      "version": "2.88.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
-                  "version": "2.88.0"
-                }
-              },
-              "EDAStackNewImageTopicD12C2BE8": {
-                "id": "EDAStackNewImageTopicD12C2BE8",
-                "path": "EDAStack/mailer-queue/EDAStackNewImageTopicD12C2BE8",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "EDAStack/mailer-queue/EDAStackNewImageTopicD12C2BE8/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
-                      "aws:cdk:cloudformation:props": {
-                        "endpoint": {
-                          "Fn::GetAtt": [
-                            "mailerqueueC56E331C",
-                            "Arn"
-                          ]
                         },
+                        "filterPolicyScope": "MessageBody",
                         "protocol": "sqs",
                         "topicArn": {
-                          "Ref": "NewImageTopic7927ABDB"
+                          "Ref": "TotalImageTopicF9AE9822"
                         }
                       }
                     },
@@ -713,6 +374,84 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "2.88.0"
+            }
+          },
+          "TotalImageTopic": {
+            "id": "TotalImageTopic",
+            "path": "EDAStack/TotalImageTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EDAStack/TotalImageTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "Total Image topic"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "2.88.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "EDAStack/TotalImageTopic/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EDAStack/TotalImageTopic/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sns:Publish",
+                              "Condition": {
+                                "ArnLike": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "images9BF4DCD5",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "s3.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Ref": "TotalImageTopicF9AE9822"
+                              },
+                              "Sid": "0"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "topics": [
+                          {
+                            "Ref": "TotalImageTopicF9AE9822"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnTopicPolicy",
+                      "version": "2.88.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.TopicPolicy",
+                  "version": "2.88.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
               "version": "2.88.0"
             }
           },
@@ -1060,22 +799,6 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "sqs:ChangeMessageVisibility",
-                                    "sqs:DeleteMessage",
-                                    "sqs:GetQueueAttributes",
-                                    "sqs:GetQueueUrl",
-                                    "sqs:ReceiveMessage"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "mailerqueueC56E331C",
-                                      "Arn"
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": [
                                     "ses:SendEmail",
                                     "ses:SendRawEmail",
                                     "ses:SendTemplatedEmail"
@@ -1147,7 +870,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                       },
-                      "s3Key": "eed6693e7f016f0c88eabbda5aa98938d8b7d80ceb502369464f90f6ffcd5d23.zip"
+                      "s3Key": "4743115724b12c9f7900ec87f02a7bf801bf4c197062be28e21e6bbf9d688725.zip"
                     },
                     "environment": {
                       "variables": {
@@ -1171,37 +894,68 @@
                   "version": "2.88.0"
                 }
               },
-              "SqsEventSource:EDAStackmailerqueue91FA78B3": {
-                "id": "SqsEventSource:EDAStackmailerqueue91FA78B3",
-                "path": "EDAStack/mailer-function/SqsEventSource:EDAStackmailerqueue91FA78B3",
+              "AllowInvoke:EDAStackTotalImageTopicC56F5992": {
+                "id": "AllowInvoke:EDAStackTotalImageTopicC56F5992",
+                "path": "EDAStack/mailer-function/AllowInvoke:EDAStackTotalImageTopicC56F5992",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "mailerfunction0BFEF8E7",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "sns.amazonaws.com",
+                    "sourceArn": {
+                      "Ref": "TotalImageTopicF9AE9822"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "2.88.0"
+                }
+              },
+              "TotalImageTopic": {
+                "id": "TotalImageTopic",
+                "path": "EDAStack/mailer-function/TotalImageTopic",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "EDAStack/mailer-function/SqsEventSource:EDAStackmailerqueue91FA78B3/Resource",
+                    "path": "EDAStack/mailer-function/TotalImageTopic/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {
-                        "batchSize": 5,
-                        "eventSourceArn": {
+                        "endpoint": {
                           "Fn::GetAtt": [
-                            "mailerqueueC56E331C",
+                            "mailerfunction0BFEF8E7",
                             "Arn"
                           ]
                         },
-                        "functionName": {
-                          "Ref": "mailerfunction0BFEF8E7"
+                        "filterPolicy": {
+                          "Records": {
+                            "eventName": [
+                              "ObjectCreated:Put"
+                            ]
+                          }
                         },
-                        "maximumBatchingWindowInSeconds": 10
+                        "filterPolicyScope": "MessageBody",
+                        "protocol": "lambda",
+                        "topicArn": {
+                          "Ref": "TotalImageTopicF9AE9822"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnEventSourceMapping",
+                      "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
                       "version": "2.88.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.EventSourceMapping",
+                  "fqn": "aws-cdk-lib.aws_sns.Subscription",
                   "version": "2.88.0"
                 }
               }
@@ -1620,9 +1374,9 @@
                   "version": "2.88.0"
                 }
               },
-              "AllowInvoke:EDAStackModifiedImageTopicEABCADEB": {
-                "id": "AllowInvoke:EDAStackModifiedImageTopicEABCADEB",
-                "path": "EDAStack/delete-image-function/AllowInvoke:EDAStackModifiedImageTopicEABCADEB",
+              "AllowInvoke:EDAStackTotalImageTopicC56F5992": {
+                "id": "AllowInvoke:EDAStackTotalImageTopicC56F5992",
+                "path": "EDAStack/delete-image-function/AllowInvoke:EDAStackTotalImageTopicC56F5992",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -1635,7 +1389,7 @@
                     },
                     "principal": "sns.amazonaws.com",
                     "sourceArn": {
-                      "Ref": "ModifiedImageTopicC6478B85"
+                      "Ref": "TotalImageTopicF9AE9822"
                     }
                   }
                 },
@@ -1644,13 +1398,13 @@
                   "version": "2.88.0"
                 }
               },
-              "ModifiedImageTopic": {
-                "id": "ModifiedImageTopic",
-                "path": "EDAStack/delete-image-function/ModifiedImageTopic",
+              "TotalImageTopic": {
+                "id": "TotalImageTopic",
+                "path": "EDAStack/delete-image-function/TotalImageTopic",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "EDAStack/delete-image-function/ModifiedImageTopic/Resource",
+                    "path": "EDAStack/delete-image-function/TotalImageTopic/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {
@@ -1660,9 +1414,17 @@
                             "Arn"
                           ]
                         },
+                        "filterPolicy": {
+                          "Records": {
+                            "eventName": [
+                              "ObjectRemoved:Delete"
+                            ]
+                          }
+                        },
+                        "filterPolicyScope": "MessageBody",
                         "protocol": "lambda",
                         "topicArn": {
-                          "Ref": "ModifiedImageTopicC6478B85"
+                          "Ref": "TotalImageTopicF9AE9822"
                         }
                       }
                     },
@@ -1674,6 +1436,233 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                  "version": "2.88.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
+              "version": "2.88.0"
+            }
+          },
+          "delete-mailer-function": {
+            "id": "delete-mailer-function",
+            "path": "EDAStack/delete-mailer-function",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "EDAStack/delete-mailer-function/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "EDAStack/delete-mailer-function/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.88.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EDAStack/delete-mailer-function/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.88.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "EDAStack/delete-mailer-function/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "EDAStack/delete-mailer-function/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "dynamodb:ListStreams",
+                                    "ses:SendEmail",
+                                    "ses:SendRawEmail",
+                                    "ses:SendTemplatedEmail"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "dynamodb:DescribeStream",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "FileTableE63FDBC8",
+                                      "StreamArn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "deletemailerfunctionServiceRoleDefaultPolicyA62A13BD",
+                            "roles": [
+                              {
+                                "Ref": "deletemailerfunctionServiceRoleCE691928"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.88.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.88.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.88.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "EDAStack/delete-mailer-function/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "EDAStack/delete-mailer-function/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.88.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "EDAStack/delete-mailer-function/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.88.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.88.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EDAStack/delete-mailer-function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
+                      },
+                      "s3Key": "0c3d64eae3aac58847a972e7122c10771adda9cb77b46d98febba6d164cb6afc.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "REGION": {
+                          "Ref": "AWS::Region"
+                        },
+                        "TABLE_NAME": {
+                          "Ref": "FileTableE63FDBC8"
+                        },
+                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                      }
+                    },
+                    "handler": "index.handler",
+                    "memorySize": 1024,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "deletemailerfunctionServiceRoleCE691928",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs16.x",
+                    "timeout": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.88.0"
+                }
+              },
+              "DynamoDBEventSource:EDAStackFileTable32EC2CCC": {
+                "id": "DynamoDBEventSource:EDAStackFileTable32EC2CCC",
+                "path": "EDAStack/delete-mailer-function/DynamoDBEventSource:EDAStackFileTable32EC2CCC",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EDAStack/delete-mailer-function/DynamoDBEventSource:EDAStackFileTable32EC2CCC/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "batchSize": 5,
+                        "bisectBatchOnFunctionError": true,
+                        "eventSourceArn": {
+                          "Fn::GetAtt": [
+                            "FileTableE63FDBC8",
+                            "StreamArn"
+                          ]
+                        },
+                        "functionName": {
+                          "Ref": "deletemailerfunction4A46A71C"
+                        },
+                        "maximumRetryAttempts": 10,
+                        "startingPosition": "TRIM_HORIZON"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnEventSourceMapping",
+                      "version": "2.88.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.EventSourceMapping",
                   "version": "2.88.0"
                 }
               }
@@ -1872,9 +1861,9 @@
                   "version": "2.88.0"
                 }
               },
-              "AllowInvoke:EDAStackModifiedImageTopicEABCADEB": {
-                "id": "AllowInvoke:EDAStackModifiedImageTopicEABCADEB",
-                "path": "EDAStack/update-image-function/AllowInvoke:EDAStackModifiedImageTopicEABCADEB",
+              "AllowInvoke:EDAStackTotalImageTopicC56F5992": {
+                "id": "AllowInvoke:EDAStackTotalImageTopicC56F5992",
+                "path": "EDAStack/update-image-function/AllowInvoke:EDAStackTotalImageTopicC56F5992",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -1887,7 +1876,7 @@
                     },
                     "principal": "sns.amazonaws.com",
                     "sourceArn": {
-                      "Ref": "ModifiedImageTopicC6478B85"
+                      "Ref": "TotalImageTopicF9AE9822"
                     }
                   }
                 },
@@ -1896,13 +1885,13 @@
                   "version": "2.88.0"
                 }
               },
-              "ModifiedImageTopic": {
-                "id": "ModifiedImageTopic",
-                "path": "EDAStack/update-image-function/ModifiedImageTopic",
+              "TotalImageTopic": {
+                "id": "TotalImageTopic",
+                "path": "EDAStack/update-image-function/TotalImageTopic",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "EDAStack/update-image-function/ModifiedImageTopic/Resource",
+                    "path": "EDAStack/update-image-function/TotalImageTopic/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {
@@ -1919,7 +1908,7 @@
                         },
                         "protocol": "lambda",
                         "topicArn": {
-                          "Ref": "ModifiedImageTopicC6478B85"
+                          "Ref": "TotalImageTopicF9AE9822"
                         }
                       }
                     },

@@ -10,6 +10,9 @@ import * as subs from "aws-cdk-lib/aws-sns-subscriptions";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from "constructs";
+import {StreamViewType} from "aws-cdk-lib/aws-dynamodb";
+import {DynamoEventSource, SqsDlq} from "aws-cdk-lib/aws-lambda-event-sources";
+import {StartingPosition} from "aws-cdk-lib/aws-lambda";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class EDAAppStack extends cdk.Stack {
@@ -22,6 +25,7 @@ export class EDAAppStack extends cdk.Stack {
       partitionKey: { name: 'FileName', type: dynamodb.AttributeType.STRING },
       tableName: 'FileTable',
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      stream: StreamViewType.OLD_IMAGE,
   });
 
     const imagesBucket = new s3.Bucket(this, "images", {
@@ -45,17 +49,20 @@ export class EDAAppStack extends cdk.Stack {
     },
   });
 
-const newImageTopic = new sns.Topic(this, "NewImageTopic", {
-    displayName: "New Image topic",
-  }); 
+//const newImageTopic = new sns.Topic(this, "NewImageTopic", {
+    //displayName: "New Image topic",
+  //}); 
 
-  const modifiedImageTopic = new sns.Topic(this, "ModifiedImageTopic", {
-    displayName: "Modified Image topic",
+  //const modifiedImageTopic = new sns.Topic(this, "ModifiedImageTopic", {
+    //displayName: "Modified Image topic",
+//});
+
+  //const mailerQ = new sqs.Queue(this, "mailer-queue", {
+    //receiveMessageWaitTime: cdk.Duration.seconds(10),
+  //});
+  const TotalImageTopic = new sns.Topic(this, "TotalImageTopic", {
+    displayName: "Total Image topic",
 });
-
-  const mailerQ = new sqs.Queue(this, "mailer-queue", {
-    receiveMessageWaitTime: cdk.Duration.seconds(10),
-  });
 
   // Lambda functions
 
@@ -99,6 +106,17 @@ const deleteImageFn = new lambdanode.NodejsFunction(this, "delete-image-function
   },
 });
 
+const deleteMailerFn = new lambdanode.NodejsFunction(this, "delete-mailer-function", {
+  runtime: lambda.Runtime.NODEJS_16_X,
+  memorySize: 1024,
+  timeout: cdk.Duration.seconds(3),
+  entry: `${__dirname}/../lambdas/deleteMailer.ts`,
+  environment: {
+      REGION: cdk.Aws.REGION,
+      TABLE_NAME: FileTable.tableName,
+  },
+});
+
 // add updateImageFn
 const updateImageFn = new lambdanode.NodejsFunction(this, "update-image-function", {
   runtime: lambda.Runtime.NODEJS_16_X,
@@ -112,55 +130,106 @@ const updateImageFn = new lambdanode.NodejsFunction(this, "update-image-function
 });
 
 
- // S3 --> SQS
+ // S3 --> SQS changed to S3 --> SNS Topic
  imagesBucket.addEventNotification(
   s3.EventType.OBJECT_CREATED,
-  new s3n.SnsDestination(newImageTopic)  // Changed
+  new s3n.SnsDestination(TotalImageTopic)  // Changed
 );
 imagesBucket.addEventNotification(
   s3.EventType.OBJECT_REMOVED,
-  new s3n.SnsDestination(modifiedImageTopic)  // Changed 
+  new s3n.SnsDestination(TotalImageTopic)  // Changed 
 );
  // SQS --> Lambda
   const newImageEventSource = new events.SqsEventSource(imageProcessQueue , {
     batchSize: 5,
     maxBatchingWindow: cdk.Duration.seconds(10),
   });
-const newImageMailEventSource = new events.SqsEventSource(mailerQ, {
-    batchSize: 5,
-    maxBatchingWindow: cdk.Duration.seconds(10),
-  }); 
+//const newImageMailEventSource = new events.SqsEventSource(mailerQ, {
+    //batchSize: 5,
+    //maxBatchingWindow: cdk.Duration.seconds(10),
+  //}); 
 
   const newImageRejectionMailEventSource = new events.SqsEventSource(rejectedMailsQueue, {
     batchSize: 5,
     maxBatchingWindow: cdk.Duration.seconds(10),
 });
   
-  newImageTopic.addSubscription(
-    new subs.SqsSubscription(imageProcessQueue)
-  );
-  newImageTopic.addSubscription(new subs.SqsSubscription(mailerQ));
+  //newImageTopic.addSubscription(
+    //new subs.SqsSubscription(imageProcessQueue));
+    TotalImageTopic.addSubscription(
+      new subs.SqsSubscription(imageProcessQueue, {
+          filterPolicyWithMessageBody: {
+              Records: sns.FilterOrPolicy.policy({
+                  eventName: sns.FilterOrPolicy.filter(
+                      sns.SubscriptionFilter.stringFilter({
+                          matchPrefixes: ["ObjectCreated:Put"],
+                      })
+                  ),
+              })
+          }
+      })
+    )
+
+  //newImageTopic.addSubscription(new subs.SqsSubscription(mailerQ));
 
 
-  modifiedImageTopic.addSubscription(
-    new subs.LambdaSubscription(deleteImageFn)
+  //modifiedImageTopic.addSubscription(
+    //new subs.LambdaSubscription(deleteImageFn));
+    
+    TotalImageTopic.addSubscription(
+      new subs.LambdaSubscription(mailerFn, {
+          filterPolicyWithMessageBody: {
+              Records: sns.FilterOrPolicy.policy({
+                  eventName: sns.FilterOrPolicy.filter(
+                      sns.SubscriptionFilter.stringFilter({
+                          allowlist: ["ObjectCreated:Put"],
+                      })
+                  ),
+              })
+          }
+      })
+  )
+
+  TotalImageTopic.addSubscription(
+      new subs.LambdaSubscription(deleteImageFn, {
+          filterPolicyWithMessageBody: {
+              Records: sns.FilterOrPolicy.policy({
+                  eventName: sns.FilterOrPolicy.filter(
+                      sns.SubscriptionFilter.stringFilter({
+                          allowlist: ["ObjectRemoved:Delete"],
+                      })
+                  ),
+              })
+          }
+      })
+  )
+  
+  TotalImageTopic.addSubscription(
+    new subs.LambdaSubscription(updateImageFn, {
+        filterPolicy: {
+            comment_type: sns.SubscriptionFilter.stringFilter({
+                allowlist: ["Caption"],
+            }),
+        },
+    })
 );
 
-modifiedImageTopic.addSubscription(
-  new subs.LambdaSubscription(updateImageFn,{
-      filterPolicy: {
-        comment_type: sns.SubscriptionFilter.stringFilter({
-          allowlist: ["Caption"],
-          }),
-      },
-  })
-);
+
 
 processImageFn.addEventSource(newImageEventSource);
  
-  newImageTopic.addSubscription(new subs.SqsSubscription(rejectedMailsQueue));
-  mailerFn.addEventSource(newImageMailEventSource);
+  //newImageTopic.addSubscription(new subs.SqsSubscription(rejectedMailsQueue));
+  //mailerFn.addEventSource(newImageMailEventSource);
   rejectionMailerFn.addEventSource(newImageRejectionMailEventSource);
+  deleteMailerFn.addEventSource(new DynamoEventSource(FileTable, {
+    startingPosition: StartingPosition.TRIM_HORIZON,
+    batchSize: 5,
+    bisectBatchOnError: true,
+    retryAttempts: 10
+}));
+  // Permissions
+
+  imagesBucket.grantRead(processImageFn);
 
   mailerFn.addToRolePolicy(
     new iam.PolicyStatement({
@@ -176,9 +245,7 @@ processImageFn.addEventSource(newImageEventSource);
   
 
 
-  // Permissions
 
-  imagesBucket.grantRead(processImageFn);
 
 // Add SES to reject mailer
 
@@ -193,6 +260,17 @@ rejectionMailerFn.addToRolePolicy(
     resources: ["*"],
   })
 );
+deleteMailerFn.addToRolePolicy(
+  new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+          "ses:SendEmail",
+          "ses:SendRawEmail",
+          "ses:SendTemplatedEmail",
+      ],
+      resources: ["*"],
+  })
+);
 
 FileTable.grantReadWriteData(processImageFn);
 FileTable.grantReadWriteData(deleteImageFn);
@@ -203,7 +281,8 @@ FileTable.grantReadWriteData(updateImageFn);
     value: imagesBucket.bucketName,
   });
   new cdk.CfnOutput(this, "topicName", {
-    value: modifiedImageTopic.topicArn,
+    value: TotalImageTopic.topicArn,
   });
   }
 }
+
