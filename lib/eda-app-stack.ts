@@ -101,6 +101,18 @@ const deleteImageFn = new lambdanode.NodejsFunction(this, "delete-image-function
   },
 });
 
+// add updateImageFn
+const updateImageFn = new lambdanode.NodejsFunction(this, "update-image-function", {
+  runtime: lambda.Runtime.NODEJS_16_X,
+  memorySize: 1024,
+  timeout: cdk.Duration.seconds(3),
+  entry: `${__dirname}/../lambdas/updateImage.ts`,
+  environment: {
+      REGION: cdk.Aws.REGION,
+      TABLE_NAME: FileTable.tableName,
+  },
+});
+
 
  // S3 --> SQS
  imagesBucket.addEventNotification(
@@ -141,7 +153,17 @@ imagesBucket.addEventNotification(
             }),
         },
     })
-)
+);
+modifiedImageTopic.addSubscription(
+  new subs.LambdaSubscription(updateImageFn,{
+      filterPolicy: {
+        comment_type: sns.SubscriptionFilter.stringFilter({
+          allowlist: ["Caption"],
+          }),
+      },
+  })
+);
+
 
   newImageTopic.addSubscription(new subs.SqsSubscription(mailerQ));
   newImageTopic.addSubscription(new subs.SqsSubscription(rejectedMailsQueue));
@@ -182,10 +204,14 @@ rejectionMailerFn.addToRolePolicy(
 
 FileTable.grantReadWriteData(processImageFn);
 FileTable.grantReadWriteData(deleteImageFn);
+FileTable.grantReadWriteData(updateImageFn);
   // Output
   
   new cdk.CfnOutput(this, "bucketName", {
     value: imagesBucket.bucketName,
+  });
+  new cdk.CfnOutput(this, "topicName", {
+    value: modifiedImageTopic.topicArn,
   });
   }
 }
