@@ -1,4 +1,4 @@
-import { SQSHandler, SNSHandler } from "aws-lambda";
+import {SNSHandler, SQSHandler} from "aws-lambda";
 // import AWS from 'aws-sdk';
 import { SES_EMAIL_FROM, SES_EMAIL_TO, SES_REGION } from "../env";
 import {
@@ -24,8 +24,6 @@ const client = new SESClient({ region: SES_REGION});
 export const handler: SNSHandler = async (event: any) => {
   console.log("Event ", JSON.stringify(event));
   for (const record of event.Records) {
-   // const recordBody = JSON.parse(record.body);
-    //const snsMessage = JSON.parse(recordBody.Message);
     const snsMessage = JSON.parse(record.Sns.Message);
 
     if (snsMessage.Records) {

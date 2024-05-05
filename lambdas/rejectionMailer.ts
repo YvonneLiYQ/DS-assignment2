@@ -72,7 +72,6 @@ function sendEmailParams({name, email, message}: ContactDetails) {
     return parameters;
 }
 
-
 function getHtmlContent({name, email, message}: ContactDetails) {
     return `
     <html>
