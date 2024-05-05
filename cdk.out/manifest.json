@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/19e0345540f48d9c5d2f23849e3133e53cd7c08e5e2dde35bfff0a2a9a2408c1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/020708f010a6ab1f767afd89c1610f019765031d69392cbe017aff84a851e76f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -119,6 +119,30 @@
             "data": "imgcreatedqueueEDAStackNewImageTopicD12C2BE856F43343"
           }
         ],
+        "/EDAStack/NewImageTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NewImageTopic7927ABDB"
+          }
+        ],
+        "/EDAStack/NewImageTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NewImageTopicPolicy710AE2A8"
+          }
+        ],
+        "/EDAStack/ModifiedImageTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModifiedImageTopicC6478B85"
+          }
+        ],
+        "/EDAStack/ModifiedImageTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModifiedImageTopicPolicy1C856FA1"
+          }
+        ],
         "/EDAStack/mailer-queue/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -135,18 +159,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "mailerqueueEDAStackNewImageTopicD12C2BE84E1E546B"
-          }
-        ],
-        "/EDAStack/NewImageTopic/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NewImageTopic7927ABDB"
-          }
-        ],
-        "/EDAStack/NewImageTopic/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NewImageTopicPolicy710AE2A8"
           }
         ],
         "/EDAStack/ProcessImageFn/ServiceRole/Resource": [
@@ -221,6 +233,66 @@
             "data": "rejectionmailerfunctionSqsEventSourceEDAStackrejectedmailerqueue0605864147E4D7A2"
           }
         ],
+        "/EDAStack/delete-image-function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deleteimagefunctionServiceRole13273E35"
+          }
+        ],
+        "/EDAStack/delete-image-function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deleteimagefunctionServiceRoleDefaultPolicyAC9EEF1E"
+          }
+        ],
+        "/EDAStack/delete-image-function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deleteimagefunction87752EA4"
+          }
+        ],
+        "/EDAStack/delete-image-function/AllowInvoke:EDAStackModifiedImageTopicEABCADEB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deleteimagefunctionAllowInvokeEDAStackModifiedImageTopicEABCADEB911BAA30"
+          }
+        ],
+        "/EDAStack/delete-image-function/ModifiedImageTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deleteimagefunctionModifiedImageTopicC227A36F"
+          }
+        ],
+        "/EDAStack/update-image-function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "updateimagefunctionServiceRole283AD6F7"
+          }
+        ],
+        "/EDAStack/update-image-function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "updateimagefunctionServiceRoleDefaultPolicy152D4191"
+          }
+        ],
+        "/EDAStack/update-image-function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "updateimagefunction6E8C4698"
+          }
+        ],
+        "/EDAStack/update-image-function/AllowInvoke:EDAStackModifiedImageTopicEABCADEB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "updateimagefunctionAllowInvokeEDAStackModifiedImageTopicEABCADEB3E6908A7"
+          }
+        ],
+        "/EDAStack/update-image-function/ModifiedImageTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "updateimagefunctionModifiedImageTopicD27FA603"
+          }
+        ],
         "/EDAStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -243,6 +315,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "bucketName"
+          }
+        ],
+        "/EDAStack/topicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "topicName"
           }
         ],
         "/EDAStack/CDKMetadata/Default": [

@@ -137,12 +137,22 @@
        "TopicArn": {
         "Ref": "NewImageTopic7927ABDB"
        }
+      },
+      {
+       "Events": [
+        "s3:ObjectRemoved:*"
+       ],
+       "TopicArn": {
+        "Ref": "ModifiedImageTopicC6478B85"
+       }
       }
      ]
     },
     "Managed": true
    },
    "DependsOn": [
+    "ModifiedImageTopicPolicy1C856FA1",
+    "ModifiedImageTopicC6478B85",
     "NewImageTopicPolicy710AE2A8",
     "NewImageTopic7927ABDB"
    ],
@@ -219,7 +229,7 @@
   "rejectedmailerqueue558CD492": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
-    "ReceiveMessageWaitTimeSeconds": 10
+    "MessageRetentionPeriod": 1800
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -365,6 +375,102 @@
     "aws:cdk:path": "EDAStack/img-created-queue/EDAStackNewImageTopicD12C2BE8/Resource"
    }
   },
+  "NewImageTopic7927ABDB": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "New Image topic"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/NewImageTopic/Resource"
+   }
+  },
+  "NewImageTopicPolicy710AE2A8": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "images9BF4DCD5",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "NewImageTopic7927ABDB"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "NewImageTopic7927ABDB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/NewImageTopic/Policy/Resource"
+   }
+  },
+  "ModifiedImageTopicC6478B85": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "Modified Image topic"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/ModifiedImageTopic/Resource"
+   }
+  },
+  "ModifiedImageTopicPolicy1C856FA1": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "images9BF4DCD5",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "ModifiedImageTopicC6478B85"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "ModifiedImageTopicC6478B85"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/ModifiedImageTopic/Policy/Resource"
+   }
+  },
   "mailerqueueC56E331C": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
@@ -433,54 +539,6 @@
    ],
    "Metadata": {
     "aws:cdk:path": "EDAStack/mailer-queue/EDAStackNewImageTopicD12C2BE8/Resource"
-   }
-  },
-  "NewImageTopic7927ABDB": {
-   "Type": "AWS::SNS::Topic",
-   "Properties": {
-    "DisplayName": "New Image topic"
-   },
-   "Metadata": {
-    "aws:cdk:path": "EDAStack/NewImageTopic/Resource"
-   }
-  },
-  "NewImageTopicPolicy710AE2A8": {
-   "Type": "AWS::SNS::TopicPolicy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sns:Publish",
-       "Condition": {
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::GetAtt": [
-           "images9BF4DCD5",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "s3.amazonaws.com"
-       },
-       "Resource": {
-        "Ref": "NewImageTopic7927ABDB"
-       },
-       "Sid": "0"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Topics": [
-     {
-      "Ref": "NewImageTopic7927ABDB"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "EDAStack/NewImageTopic/Policy/Resource"
    }
   },
   "ProcessImageFnServiceRoleD858855F": {
@@ -937,6 +995,331 @@
     "aws:cdk:path": "EDAStack/rejection-mailer-function/SqsEventSource:EDAStackrejectedmailerqueue06058641/Resource"
    }
   },
+  "deleteimagefunctionServiceRole13273E35": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/delete-image-function/ServiceRole/Resource"
+   }
+  },
+  "deleteimagefunctionServiceRoleDefaultPolicyAC9EEF1E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FileTableE63FDBC8",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "deleteimagefunctionServiceRoleDefaultPolicyAC9EEF1E",
+    "Roles": [
+     {
+      "Ref": "deleteimagefunctionServiceRole13273E35"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/delete-image-function/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "deleteimagefunction87752EA4": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
+     },
+     "S3Key": "59228741f328405fcd78dfaa88fdcc8c8d1ec7151842d098e0e1e238948ed9c5.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "REGION": {
+       "Ref": "AWS::Region"
+      },
+      "TABLE_NAME": {
+       "Ref": "FileTableE63FDBC8"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "index.handler",
+    "MemorySize": 1024,
+    "Role": {
+     "Fn::GetAtt": [
+      "deleteimagefunctionServiceRole13273E35",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs16.x",
+    "Timeout": 3
+   },
+   "DependsOn": [
+    "deleteimagefunctionServiceRoleDefaultPolicyAC9EEF1E",
+    "deleteimagefunctionServiceRole13273E35"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/delete-image-function/Resource",
+    "aws:asset:path": "asset.59228741f328405fcd78dfaa88fdcc8c8d1ec7151842d098e0e1e238948ed9c5",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "deleteimagefunctionAllowInvokeEDAStackModifiedImageTopicEABCADEB911BAA30": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "deleteimagefunction87752EA4",
+      "Arn"
+     ]
+    },
+    "Principal": "sns.amazonaws.com",
+    "SourceArn": {
+     "Ref": "ModifiedImageTopicC6478B85"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/delete-image-function/AllowInvoke:EDAStackModifiedImageTopicEABCADEB"
+   }
+  },
+  "deleteimagefunctionModifiedImageTopicC227A36F": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "deleteimagefunction87752EA4",
+      "Arn"
+     ]
+    },
+    "Protocol": "lambda",
+    "TopicArn": {
+     "Ref": "ModifiedImageTopicC6478B85"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/delete-image-function/ModifiedImageTopic/Resource"
+   }
+  },
+  "updateimagefunctionServiceRole283AD6F7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/update-image-function/ServiceRole/Resource"
+   }
+  },
+  "updateimagefunctionServiceRoleDefaultPolicy152D4191": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FileTableE63FDBC8",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "updateimagefunctionServiceRoleDefaultPolicy152D4191",
+    "Roles": [
+     {
+      "Ref": "updateimagefunctionServiceRole283AD6F7"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/update-image-function/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "updateimagefunction6E8C4698": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
+     },
+     "S3Key": "8fb696a1447d7962c5a655dd297b7f1ad260c8317dfe8811e69389259b3c3566.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "REGION": {
+       "Ref": "AWS::Region"
+      },
+      "TABLE_NAME": {
+       "Ref": "FileTableE63FDBC8"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "index.handler",
+    "MemorySize": 1024,
+    "Role": {
+     "Fn::GetAtt": [
+      "updateimagefunctionServiceRole283AD6F7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs16.x",
+    "Timeout": 3
+   },
+   "DependsOn": [
+    "updateimagefunctionServiceRoleDefaultPolicy152D4191",
+    "updateimagefunctionServiceRole283AD6F7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/update-image-function/Resource",
+    "aws:asset:path": "asset.8fb696a1447d7962c5a655dd297b7f1ad260c8317dfe8811e69389259b3c3566",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "updateimagefunctionAllowInvokeEDAStackModifiedImageTopicEABCADEB3E6908A7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "updateimagefunction6E8C4698",
+      "Arn"
+     ]
+    },
+    "Principal": "sns.amazonaws.com",
+    "SourceArn": {
+     "Ref": "ModifiedImageTopicC6478B85"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/update-image-function/AllowInvoke:EDAStackModifiedImageTopicEABCADEB"
+   }
+  },
+  "updateimagefunctionModifiedImageTopicD27FA603": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "updateimagefunction6E8C4698",
+      "Arn"
+     ]
+    },
+    "FilterPolicy": {
+     "comment_type": [
+      "Caption"
+     ]
+    },
+    "Protocol": "lambda",
+    "TopicArn": {
+     "Ref": "ModifiedImageTopicC6478B85"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "EDAStack/update-image-function/ModifiedImageTopic/Resource"
+   }
+  },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1023,7 +1406,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WPzW7DIBCEnyV3vE0TVcq1sZpb29TO3VoDifAPuF5wFCHevTK24lRVLzs7A/uxbGC3g/UKr5RwUSeNKsHnFnnN8EqFFzeNrREl+BOWjWTpWccmMNqC3zteSzuGczfJ0TSK35Z49pPZI43T3wT+y0kXkVMT6zL7YAMjTeBzVxLvVWeV0eONX/5kOsXjfrGJdYE92MAabEuBhTZCVgQfUQ5O88hR2ILPzPTXqAvlvs22QCJpCV5HmYHg07O+c94GqW1uXM/lO3ad0peR8DcNgWWSYsJSR9a0iz3rf46OvRmUkD2L7+cWLzP/09nO2cDGv0FFT8PmGV5gvapIqaR32qpWQjbpD/SZUwz7AQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WPT2+DMAzFP0vvwetaTep1RettG4PeUQihMn8ShhOqKsp3nwiodNJ2yXvPjn+yd3A4wHbDrxSJsolaLMBlhouG8Svlrrwp3umyAHfmRStZXKlgPKM9uKMVjTRTcXGzJLpFcVvLS57DkdM0/U3gvqy0ATmb8K6zD9EzUgQuswWJAXuDWk0/fuWz7lGE/YIJ7wp7iJ61vCtKnitdyprgI8jJKhE4yDtwqZ5vDbpS7tvsc04kDcHrJAsQXFypO+dtlMpk2g5CvvO+R3WZCH9XEzl0SIRaec9SSaHPYktGd2us1D+tZNAjlnJgYZvM8MvC/bSmt8az6VKo6WncPcMLbDc1IUaDVQY7CemsPyBiDuUJAgAA"
    },
    "Metadata": {
     "aws:cdk:path": "EDAStack/CDKMetadata/Default"
@@ -1034,6 +1417,11 @@
   "bucketName": {
    "Value": {
     "Ref": "images9BF4DCD5"
+   }
+  },
+  "topicName": {
+   "Value": {
+    "Ref": "ModifiedImageTopicC6478B85"
    }
   }
  },

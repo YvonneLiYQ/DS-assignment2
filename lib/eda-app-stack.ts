@@ -33,7 +33,7 @@ export class EDAAppStack extends cdk.Stack {
   // Integration infrastructure
 
   const rejectedMailsQueue = new sqs.Queue(this, "rejected-mailer-queue", {
-    receiveMessageWaitTime: cdk.Duration.seconds(10),
+    //receiveMessageWaitTime: cdk.Duration.seconds(10),
     retentionPeriod: cdk.Duration.minutes(30),
 });
 
@@ -45,12 +45,7 @@ export class EDAAppStack extends cdk.Stack {
     },
   });
 
-
-  const mailerQ = new sqs.Queue(this, "mailer-queue", {
-    receiveMessageWaitTime: cdk.Duration.seconds(10),
-  });
-
-  const newImageTopic = new sns.Topic(this, "NewImageTopic", {
+const newImageTopic = new sns.Topic(this, "NewImageTopic", {
     displayName: "New Image topic",
   }); 
 
@@ -58,6 +53,9 @@ export class EDAAppStack extends cdk.Stack {
     displayName: "Modified Image topic",
 });
 
+  const mailerQ = new sqs.Queue(this, "mailer-queue", {
+    receiveMessageWaitTime: cdk.Duration.seconds(10),
+  });
 
   // Lambda functions
 
@@ -128,32 +126,26 @@ imagesBucket.addEventNotification(
     batchSize: 5,
     maxBatchingWindow: cdk.Duration.seconds(10),
   });
-
-  newImageTopic.addSubscription(
-    new subs.SqsSubscription(imageProcessQueue)
-  );
-
-  processImageFn.addEventSource(newImageEventSource);
-
-  const newImageMailEventSource = new events.SqsEventSource(mailerQ, {
+const newImageMailEventSource = new events.SqsEventSource(mailerQ, {
     batchSize: 5,
     maxBatchingWindow: cdk.Duration.seconds(10),
   }); 
 
-  const newImageRejectionMailEventSource = new events.SqsEventSource(rejectedMailsQueue,{
+  const newImageRejectionMailEventSource = new events.SqsEventSource(rejectedMailsQueue, {
     batchSize: 5,
     maxBatchingWindow: cdk.Duration.seconds(10),
-  });
+});
+  
+  newImageTopic.addSubscription(
+    new subs.SqsSubscription(imageProcessQueue)
+  );
+  newImageTopic.addSubscription(new subs.SqsSubscription(mailerQ));
+
 
   modifiedImageTopic.addSubscription(
-    new subs.LambdaSubscription(deleteImageFn,{
-        filterPolicy: {
-            extension: sns.SubscriptionFilter.stringFilter({
-                allowlist: [".jpeg", ".png"],
-            }),
-        },
-    })
+    new subs.LambdaSubscription(deleteImageFn)
 );
+
 modifiedImageTopic.addSubscription(
   new subs.LambdaSubscription(updateImageFn,{
       filterPolicy: {
@@ -164,8 +156,8 @@ modifiedImageTopic.addSubscription(
   })
 );
 
-
-  newImageTopic.addSubscription(new subs.SqsSubscription(mailerQ));
+processImageFn.addEventSource(newImageEventSource);
+ 
   newImageTopic.addSubscription(new subs.SqsSubscription(rejectedMailsQueue));
   mailerFn.addEventSource(newImageMailEventSource);
   rejectionMailerFn.addEventSource(newImageRejectionMailEventSource);
