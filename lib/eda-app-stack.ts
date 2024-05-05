@@ -34,6 +34,7 @@ export class EDAAppStack extends cdk.Stack {
 
   const rejectedMailsQueue = new sqs.Queue(this, "rejected-mailer-queue", {
     receiveMessageWaitTime: cdk.Duration.seconds(10),
+    retentionPeriod: cdk.Duration.minutes(30),
 });
 
   const imageProcessQueue = new sqs.Queue(this, "img-created-queue", {
@@ -43,6 +44,8 @@ export class EDAAppStack extends cdk.Stack {
       maxReceiveCount: 1,
     },
   });
+
+
   const mailerQ = new sqs.Queue(this, "mailer-queue", {
     receiveMessageWaitTime: cdk.Duration.seconds(10),
   });
@@ -50,6 +53,11 @@ export class EDAAppStack extends cdk.Stack {
   const newImageTopic = new sns.Topic(this, "NewImageTopic", {
     displayName: "New Image topic",
   }); 
+
+  const modifiedImageTopic = new sns.Topic(this, "ModifiedImageTopic", {
+    displayName: "Modified Image topic",
+});
+
 
   // Lambda functions
 
@@ -74,20 +82,35 @@ export class EDAAppStack extends cdk.Stack {
     timeout: cdk.Duration.seconds(3),
     entry: `${__dirname}/../lambdas/mailer.ts`,
   });
-
+//add rejectionMailerFn
   const rejectionMailerFn = new lambdanode.NodejsFunction(this, "rejection-mailer-function", {
     runtime: lambda.Runtime.NODEJS_16_X,
     memorySize: 1024,
     timeout: cdk.Duration.seconds(3),
     entry: `${__dirname}/../lambdas/rejectionMailer.ts`,
 });
+// add deleteImageFn
+const deleteImageFn = new lambdanode.NodejsFunction(this, "delete-image-function", {
+  runtime: lambda.Runtime.NODEJS_16_X,
+  memorySize: 1024,
+  timeout: cdk.Duration.seconds(3),
+  entry: `${__dirname}/../lambdas/deleteImage.ts`,
+  environment: {
+      REGION: cdk.Aws.REGION,
+      TABLE_NAME: FileTable.tableName,
+  },
+});
+
 
  // S3 --> SQS
  imagesBucket.addEventNotification(
   s3.EventType.OBJECT_CREATED,
   new s3n.SnsDestination(newImageTopic)  // Changed
 );
-
+imagesBucket.addEventNotification(
+  s3.EventType.OBJECT_REMOVED,
+  new s3n.SnsDestination(modifiedImageTopic)  // Changed 
+);
  // SQS --> Lambda
   const newImageEventSource = new events.SqsEventSource(imageProcessQueue , {
     batchSize: 5,
@@ -109,6 +132,16 @@ export class EDAAppStack extends cdk.Stack {
     batchSize: 5,
     maxBatchingWindow: cdk.Duration.seconds(10),
   });
+
+  modifiedImageTopic.addSubscription(
+    new subs.LambdaSubscription(deleteImageFn,{
+        filterPolicy: {
+            extension: sns.SubscriptionFilter.stringFilter({
+                allowlist: [".jpeg", ".png"],
+            }),
+        },
+    })
+)
 
   newImageTopic.addSubscription(new subs.SqsSubscription(mailerQ));
   newImageTopic.addSubscription(new subs.SqsSubscription(rejectedMailsQueue));
@@ -148,7 +181,7 @@ rejectionMailerFn.addToRolePolicy(
 );
 
 FileTable.grantReadWriteData(processImageFn);
-
+FileTable.grantReadWriteData(deleteImageFn);
   // Output
   
   new cdk.CfnOutput(this, "bucketName", {
