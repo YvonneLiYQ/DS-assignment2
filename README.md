@@ -1,3 +1,18 @@
+# Distributed Systems - Assignment 2
 
+_Student Name:_ Yangqing Li
 
-aws s3 cp test.txt s3://a-bucket/test.txt --metadata '{"x-amz-meta-cms-id":"34533452"}'
+## Phase 1
++ Phase 1 Requirement fully implemented.
++ Confirmation Mailer - mailer.ts
++ Rejection Mailer - rejectionMailer.ts
++ Process Image - processImage.ts
+
+## Phase 2
++ Phase 2 Requirement fully implemented
++ Process Delete - deleteImage.ts
++ Process Update - updateImage.ts; attributes.json; message.json
+
+## Phase 3
++ Phase 3 Requirement fully implemented
++ Delete Mailer - deleteMailer.ts

@@ -1,5 +1,4 @@
 import {SNSHandler, SQSHandler} from "aws-lambda";
-// import AWS from 'aws-sdk';
 import { SES_EMAIL_FROM, SES_EMAIL_TO, SES_REGION } from "../env";
 import {
   SESClient,
